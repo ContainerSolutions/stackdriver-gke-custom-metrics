@@ -64,5 +64,6 @@ metric = sdclient.metric(
 )
 
 while True:
+    print("pushing metric")
     sdclient.write_point(metric, resource, 3.14)
     time.sleep(60)
