@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sd-metrics
+  labels:
+    app: sd-metrics
+spec:
+  containers:
+  - name: sd-metrics-container
+    image: containersol/stackdriver-gke-custom-metrics
+    imagePullPolicy: Always
+    env:
+       - name: POD_UID # using Downwards API to get POD UID
+         valueFrom:
+           fieldRef:
+             fieldPath: metadata.uid
+       - name: CONTAINER_NAME
+         value: sd-metrics-container  # has to be the same as the containes[0].name above
+       - name: CLUSTER_NAME # this cannot be determined from metadata. best workaround is to store it in our own ConfigMap
+         valueFrom:
+             configMapKeyRef:
+                 name: cluster-metadata # you have to create this ConfigMap yourself for this to work (see clustermetadata.yaml)
+                 key: name
+  imagePullSecrets:
+    - name: xlidockerci
