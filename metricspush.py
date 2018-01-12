@@ -10,6 +10,7 @@ metadata_header = {'Metadata-Flavor': 'Google'}
 
 def instance_id():
     # Get the instance_id from the GCP metadata API
+    # Also possible to get this value from the Kubernetes API: Node.spec.externalID
     r = requests.get("http://metadata.google.internal./computeMetadata/v1/instance/id", headers=metadata_header)
     return r.text
 
@@ -35,6 +36,7 @@ def container_name():
 def namespace_id():
     # Get namespace_id from the Kubernetes API server. The Pod has to have the proper permissions to access this information
     # if you have enabled RBAC on your cluster.
+    # value is: Namespace.metadata.uid
     config.load_incluster_config()
     v1 = client.CoreV1Api()
     return v1.list_namespace().items[0].metadata.uid
@@ -42,6 +44,7 @@ def namespace_id():
 
 def pod_uid():
     # The UID of the Pod is passed in as an environment variable using the Kubernetes Downward API (see: metricspod.yaml)
+    # Getting it using the Kubernetes API: Pod.metadata.uid
     return os.environ['POD_UID']
 
 
